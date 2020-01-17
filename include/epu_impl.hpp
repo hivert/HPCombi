@@ -92,18 +92,17 @@ inline char less_partial(epu8 a, epu8 b, int k) {
                : static_cast<char>(a[diff]) - static_cast<char>(b[diff]);
 }
 
-
 inline uint64_t first_zero(epu8 v, int bnd) {
-    return first_mask(v == epu8 {}, bnd);
+    return first_mask(v == epu8{}, bnd);
 }
 inline uint64_t last_zero(epu8 v, int bnd) {
-    return last_mask(v == epu8 {}, bnd);
+    return last_mask(v == epu8{}, bnd);
 }
 inline uint64_t first_non_zero(epu8 v, int bnd) {
-    return first_mask(v != epu8 {}, bnd);
+    return first_mask(v != epu8{}, bnd);
 }
 inline uint64_t last_non_zero(epu8 v, int bnd) {
-    return last_mask(v != epu8 {}, bnd);
+    return last_mask(v != epu8{}, bnd);
 }
 
 /// Apply a sorting network
@@ -180,15 +179,9 @@ constexpr std::array<epu8, 6> sorting_rounds8
 inline bool is_sorted(epu8 a) {
     return _mm_movemask_epi8(shifted_right(a) > a) == 0;
 }
-inline epu8 sorted(epu8 a) {
-    return network_sort<true>(a, sorting_rounds);
-}
-inline epu8 sorted8(epu8 a) {
-    return network_sort<true>(a, sorting_rounds8);
-}
-inline epu8 revsorted(epu8 a) {
-    return network_sort<false>(a, sorting_rounds);
-}
+inline epu8 sorted(epu8 a) { return network_sort<true>(a, sorting_rounds); }
+inline epu8 sorted8(epu8 a) { return network_sort<true>(a, sorting_rounds8); }
+inline epu8 revsorted(epu8 a) { return network_sort<false>(a, sorting_rounds); }
 inline epu8 revsorted8(epu8 a) {
     return network_sort<false>(a, sorting_rounds8);
 }
@@ -199,7 +192,6 @@ inline epu8 sort_perm(epu8 &a) {
 inline epu8 sort8_perm(epu8 &a) {
     return network_sort_perm<true>(a, sorting_rounds8);
 }
-
 
 inline epu8 random_epu8(uint16_t bnd) {
     epu8 res;
@@ -219,7 +211,7 @@ inline epu8 remove_dups(epu8 v, uint8_t repl) {
 }
 
 // Gather at the front numbers with (3-i)-th bit not set.
-constexpr std::array<epu8, 3> inverting_rounds {{
+constexpr std::array<epu8, 3> inverting_rounds{{
     // clang-format off
     //     0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15
     epu8 { 0,  1,  2,  3,  8,  9, 10, 11,  4,  5,  6,  7, 12, 13, 14, 15},
@@ -244,14 +236,13 @@ inline epu8 permutation_of(epu8 a, epu8 b) {
     return res;
 }
 
-
 #if defined(FF)
 #error FF is defined !
 #endif /* FF */
 #define FF 0xff
 
 /// Permutation Round for partial and horizontal sums
-constexpr std::array<epu8, 4> summing_rounds {{
+constexpr std::array<epu8, 4> summing_rounds{{
     // clang-format off
     //      0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15
     epu8 { FF,  0, FF,  2, FF,  4, FF,  6, FF,  8, FF, 10, FF, 12, FF, 14},
@@ -261,7 +252,7 @@ constexpr std::array<epu8, 4> summing_rounds {{
     // clang-format on
 }};
 
-constexpr std::array<epu8, 4> mining_rounds {{
+constexpr std::array<epu8, 4> mining_rounds{{
     // clang-format off
     //      0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15
     epu8 {  0,  0,  2,  2,  4,  4,  6,  6,  8,  8, 10, 10, 12, 12, 14, 14},
@@ -306,7 +297,6 @@ inline epu8 partial_sums_round(epu8 v) {
     return v;
 }
 
-
 inline uint8_t horiz_max_ref(epu8 v) {
     uint8_t res = 0;
     for (size_t i = 0; i < 16; i++)
@@ -340,7 +330,6 @@ inline epu8 partial_max_round(epu8 v) {
     return v;
 }
 
-
 inline uint8_t horiz_min_ref(epu8 v) {
     uint8_t res = 255;
     for (size_t i = 0; i < 16; i++)
@@ -361,7 +350,7 @@ inline epu8 partial_min_ref(epu8 v) {
     epu8 res;
     res[0] = v[0];
     for (size_t i = 1; i < 16; i++)
-        res[i] = std::min(res[i - 1], v[i]) ;
+        res[i] = std::min(res[i - 1], v[i]);
     return res;
 }
 inline epu8 partial_min_gen(epu8 v) {
@@ -373,7 +362,6 @@ inline epu8 partial_min_round(epu8 v) {
         v = min(v, permuted(v, round));
     return v;
 }
-
 
 inline epu8 eval16_ref(epu8 v) {
     epu8 res{};
@@ -409,24 +397,22 @@ inline epu8 eval16_popcount(epu8 v) {
     return res;
 }
 
-
-inline epu8 popcount16(epu8 v){
+inline epu8 popcount16(epu8 v) {
     return permuted(popcount4, (v & Epu8(0x0f))) + permuted(popcount4, v >> 4);
 }
-
 
 inline bool is_partial_transformation(epu8 v, const size_t k) {
     uint64_t diff = last_diff(v, epu8id, 16);
     // (forall x in v, x + 1 <= 16)  and
     // (v = Perm16::one()   or  last diff index < 16)
-    return (_mm_movemask_epi8(v + Epu8(1) <= Epu8(0x10)) == 0xffff)
-        && (diff == 16 || diff < k);
+    return (_mm_movemask_epi8(v + Epu8(1) <= Epu8(0x10)) == 0xffff) &&
+           (diff == 16 || diff < k);
 }
 
 inline bool is_transformation(epu8 v, const size_t k) {
     uint64_t diff = last_diff(v, epu8id, 16);
-    return (_mm_movemask_epi8(v < Epu8(0x10)) == 0xffff)
-        && (diff == 16 || diff < k);
+    return (_mm_movemask_epi8(v < Epu8(0x10)) == 0xffff) &&
+           (diff == 16 || diff < k);
 }
 
 inline bool is_partial_permutation(epu8 v, const size_t k) {
@@ -434,9 +420,9 @@ inline bool is_partial_permutation(epu8 v, const size_t k) {
     // (forall x in v, x <= 15)  and
     // (forall x < 15, multiplicity x v <= 1
     // (v = Perm16::one()   or  last diff index < 16)
-    return (_mm_movemask_epi8(v + Epu8(1) <= Epu8(0x10)) == 0xffff)
-        && (_mm_movemask_epi8(eval16(v) <= Epu8(1)) == 0xffff)
-        && (diff == 16 || diff < k);
+    return (_mm_movemask_epi8(v + Epu8(1) <= Epu8(0x10)) == 0xffff) &&
+           (_mm_movemask_epi8(eval16(v) <= Epu8(1)) == 0xffff) &&
+           (diff == 16 || diff < k);
 }
 
 inline bool is_permutation(epu8 v, const size_t k) {
@@ -444,9 +430,9 @@ inline bool is_permutation(epu8 v, const size_t k) {
     // (forall x in v, x in Perm16::one())  and
     // (forall x in Perm16::one(), x in v)  and
     // (v = Perm16::one()   or  last diff index < 16)
-    return _mm_cmpestri(epu8id, 16, v, 16, FIRST_NON_ZERO) == 16
-        && _mm_cmpestri(v, 16, epu8id, 16, FIRST_NON_ZERO) == 16
-        && (diff == 16 || diff < k);
+    return _mm_cmpestri(epu8id, 16, v, 16, FIRST_NON_ZERO) == 16 &&
+           _mm_cmpestri(v, 16, epu8id, 16, FIRST_NON_ZERO) == 16 &&
+           (diff == 16 || diff < k);
 }
 
 }  // namespace HPCombi

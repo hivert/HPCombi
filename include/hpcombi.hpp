@@ -16,8 +16,8 @@
 #ifndef HPCOMBI_HPCOMBI_HPP_INCLUDED
 #define HPCOMBI_HPCOMBI_HPP_INCLUDED
 
+#include "bmat8.hpp"
 #include "epu.hpp"
 #include "perm16.hpp"
-#include "bmat8.hpp"
 
 #endif  // HPCOMBI_HPCOMBI_HPP_INCLUDED

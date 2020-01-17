@@ -44,7 +44,6 @@
 #define HPCOMBI_CONSTEXPR_CONSTRUCTOR
 #endif
 
-
 namespace HPCombi {
 
 /// Unsigned 8 bits int constant.
@@ -63,7 +62,6 @@ using xpu8 = uint8_t __attribute__((vector_size(32)));
 
 static_assert(alignof(xpu8) == 32,
               "xpu8 type is not properly aligned by the compiler !");
-
 
 namespace {  // Implementation detail code
 
@@ -136,14 +134,11 @@ uint8_t right_dup_fun(uint8_t i) { return i == 0 ? 0 : i - 1; }
 HPCOMBI_CONSTEXPR
 uint8_t complement_fun(uint8_t i) { return 15 - i; }
 HPCOMBI_CONSTEXPR uint8_t popcount4_fun(uint8_t i) {
-    return ((i & 1) != 0 ? 1 : 0)
-        +  ((i & 2) != 0 ? 1 : 0)
-        +  ((i & 4) != 0 ? 1 : 0)
-        +  ((i & 8) != 0 ? 1 : 0);
+    return ((i & 1) != 0 ? 1 : 0) + ((i & 2) != 0 ? 1 : 0) +
+           ((i & 4) != 0 ? 1 : 0) + ((i & 8) != 0 ? 1 : 0);
 }
 
 }  // Anonymous namespace
-
 
 /// Factory object for various SIMD constants in particular constexpr
 TPUBuild<epu8> Epu8;
@@ -258,13 +253,12 @@ inline epu8 revsorted8(epu8 a);
  * @details
  * @par Algorithm: Uses a 9 stages sorting network #sorting_rounds8
  */
-inline epu8 sort_perm(epu8 & a);
+inline epu8 sort_perm(epu8 &a);
 /** Sort \c this and return the sorting permutation
  * @details
  * @par Algorithm: Uses a 9 stages sorting network #sorting_rounds8
  */
-inline epu8 sort8_perm(epu8 & a);
-
+inline epu8 sort8_perm(epu8 &a);
 
 /** Find if a vector is a permutation of one other
  * @details
@@ -358,7 +352,6 @@ inline epu8 partial_sums_round(epu8);
 /** @copydoc common_partial_sums */
 inline epu8 partial_sums(epu8 v) { return partial_sums_round(v); }
 
-
 /** @class common_horiz_max
  * @brief Horizontal sum of a  #HPCombi::epu8
  * @details
@@ -422,7 +415,6 @@ inline epu8 partial_max_round(epu8);
 /** @copydoc common_partial_max */
 inline epu8 partial_max(epu8 v) { return partial_max_round(v); }
 
-
 /** @class common_horiz_min
  * @brief Horizontal sum of a  #HPCombi::epu8
  * @details
@@ -485,7 +477,6 @@ inline epu8 partial_min_gen(epu8);
 inline epu8 partial_min_round(epu8);
 /** @copydoc common_partial_min */
 inline epu8 partial_min(epu8 v) { return partial_min_round(v); }
-
 
 /** @class common_eval16
  * @brief Evaluation of a #HPCombi::epu8
@@ -710,7 +701,7 @@ inline std::ostream &operator<<(std::ostream &stream, HPCombi::epu8 const &a);
  *  - std::hash<epu8>
  *  - std::less<epu8>
  */
-}
+}  // namespace std
 
 #include "epu_impl.hpp"
 

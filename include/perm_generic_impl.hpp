@@ -34,16 +34,15 @@ PermGeneric<_Size, Expo>::elementary_transposition(uint64_t i) {
 }
 
 template <size_t _Size, typename Expo>
-PermGeneric<_Size, Expo>
-PermGeneric<_Size, Expo>::inverse() const {
+PermGeneric<_Size, Expo> PermGeneric<_Size, Expo>::inverse() const {
     PermGeneric res;
-    for (uint64_t i = 0; i < _Size; i++) res[this->v[i]] = i;
+    for (uint64_t i = 0; i < _Size; i++)
+        res[this->v[i]] = i;
     return res;
 }
 
 template <size_t _Size, typename Expo>
-PermGeneric<_Size, Expo>
-PermGeneric<_Size, Expo>::random() {
+PermGeneric<_Size, Expo> PermGeneric<_Size, Expo>::random() {
     PermGeneric res{{}};
     std::random_shuffle(res.v.begin(), res.v.end());
     return res;
@@ -116,4 +115,3 @@ struct hash<HPCombi::PermGeneric<_Size, Expo>> {
 };
 
 }  // namespace std
-

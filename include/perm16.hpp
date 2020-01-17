@@ -53,7 +53,10 @@ struct alignas(16) PTransf16 : public Vect16 {
     PTransf16(std::initializer_list<uint8_t> il);
 
     PTransf16 &operator=(const PTransf16 &) = default;
-    PTransf16 &operator=(const epu8 &vv) { v = vv; return *this; }
+    PTransf16 &operator=(const epu8 &vv) {
+        v = vv;
+        return *this;
+    }
 
     //! Return whether \c *this is a well constructed object
     bool validate(size_t k = 16) const {
@@ -68,13 +71,13 @@ struct alignas(16) PTransf16 : public Vect16 {
     }
 
     /** Returns a mask for the image of \c *this */
-    epu8 image_mask(bool complement=false) const;
+    epu8 image_mask(bool complement = false) const;
     /** Returns a bit mask for the image of \c *this */
-    uint32_t image_bitset(bool complement=false) const;
+    uint32_t image_bitset(bool complement = false) const;
     /** Returns a mask for the domain of \c *this */
-    epu8 domain_mask(bool complement=false) const;
+    epu8 domain_mask(bool complement = false) const;
     /** Returns a bit mask for the domain of \c *this */
-    uint32_t domain_bitset(bool complement=false) const;
+    uint32_t domain_bitset(bool complement = false) const;
 
     /** Returns the partial right identity for \c *this */
     PTransf16 right_one() const;
@@ -87,9 +90,9 @@ struct alignas(16) PTransf16 : public Vect16 {
     uint32_t rank() const;
 
     /** Returns a mask for the fix point of \c *this */
-    epu8 fix_points_mask(bool complement=false) const;
+    epu8 fix_points_mask(bool complement = false) const;
     /** Returns a bit mask for the fix point of \c *this */
-    uint32_t fix_points_bitset(bool complement=false) const;
+    uint32_t fix_points_bitset(bool complement = false) const;
     /** Returns the smallest fix point of \c *this */
     uint8_t smallest_fix_point() const;
     /** Returns the smallest non fix point of \c *this */
@@ -142,7 +145,8 @@ struct PPerm16 : public PTransf16 {
     HPCOMBI_CONSTEXPR_CONSTRUCTOR PPerm16(const vect v) : PTransf16(v) {}
     HPCOMBI_CONSTEXPR_CONSTRUCTOR PPerm16(const epu8 x) : PTransf16(x) {}
     PPerm16(std::vector<uint8_t> dom, std::vector<uint8_t> rng,
-            size_t = 0 /* unused */) : PTransf16(dom, rng) {}
+            size_t = 0 /* unused */)
+        : PTransf16(dom, rng) {}
     PPerm16(std::initializer_list<uint8_t> il) : PTransf16(il) {}
     PPerm16 &operator=(const PPerm16 &) = default;
 
@@ -170,7 +174,8 @@ struct PPerm16 : public PTransf16 {
      * x.inverse()
      * @endcode
      * Returns
-     * @verbatim {0,0xFF,2,1,3,5,6,0xFF,8,9,0xFF,10,12,0xFF,0xFF,0xFF} @endverbatim
+     * @verbatim {0,0xFF,2,1,3,5,6,0xFF,8,9,0xFF,10,12,0xFF,0xFF,0xFF}
+     * @endverbatim
      */
     /** @copydoc common_inverse_pperm
      *  @par Algorithm:
@@ -201,9 +206,7 @@ struct Perm16 : public Transf16 /* public PPerm : diamond problem */ {
     Perm16(std::initializer_list<uint8_t> il) : Transf16(il) {}
 
     //! Return whether \c *this is a well constructed object
-    bool validate(size_t k = 16) const {
-        return HPCombi::is_permutation(v, k);
-    }
+    bool validate(size_t k = 16) const { return HPCombi::is_permutation(v, k); }
 
     // It's not possible to have a static constexpr member of same type as class
     // being defined (see https://stackoverflow.com/questions/11928089/)
@@ -424,7 +427,6 @@ struct Perm16 : public Transf16 /* public PPerm : diamond problem */ {
      *  @f$O(n)@f$ algorithm using length
      */
     bool left_weak_leq(Perm16 other) const;
-
 };
 
 /*****************************************************************************/
@@ -465,9 +467,7 @@ template <> struct hash<HPCombi::PPerm16> {
 
 template <> struct hash<HPCombi::Perm16> {
     //! A hash operator for #HPCombi::Perm16
-    size_t operator()(const HPCombi::Perm16 &ar) const {
-        return uint64_t(ar);
-    }
+    size_t operator()(const HPCombi::Perm16 &ar) const { return uint64_t(ar); }
 };
 
 }  // namespace std

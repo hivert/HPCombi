@@ -194,6 +194,14 @@ class BMat8 {
     //! Returns a \c std::vector for rows of \c this
     std::vector<uint8_t> rows() const;
 
+    //! Returns a \c std::vector for rows of \c this
+    //! This is the same as BMat8::rows, which is retained for backwards
+    //! compatibility.
+    std::vector<uint8_t> row_vector() const;
+
+    //! Returns a \c std::array for rows of \c this
+    std::array<uint8_t, 8> row_array() const;
+
     //! Returns the cardinality of the row space of \c this
     //!
     //! Reference implementation computing all products
@@ -293,15 +301,10 @@ class BMat8 {
     //! This method returns the 8 x 8 BMat8 with 1s on the main diagonal.
     static BMat8 one(size_t dim = 8) {
         HPCOMBI_ASSERT(dim <= 8);
-        static std::array<uint64_t, 9> const ones = {0x0000000000000000,
-                                                     0x8000000000000000,
-                                                     0x8040000000000000,
-                                                     0x8040200000000000,
-                                                     0x8040201000000000,
-                                                     0x8040201008000000,
-                                                     0x8040201008040000,
-                                                     0x8040201008040200,
-                                                     0x8040201008040201};
+        static std::array<uint64_t, 9> const ones = {
+            0x0000000000000000, 0x8000000000000000, 0x8040000000000000,
+            0x8040200000000000, 0x8040201000000000, 0x8040201008000000,
+            0x8040201008040000, 0x8040201008040200, 0x8040201008040201};
         return BMat8(ones[dim]);
     }
 
@@ -320,7 +323,7 @@ class BMat8 {
     void swap(BMat8 &that) { std::swap(this->_data, that._data); }
 
     //! Write \c this on \c os
-    std::ostream & write(std::ostream &os) const;
+    std::ostream &write(std::ostream &os) const;
 
 #ifdef LIBSEMIGROUPS_DENSEHASHMAP
     // FIXME do this another way

@@ -32,7 +32,7 @@ struct PermGeneric : public VectGeneric<_Size, Expo> {
     static constexpr size_t size() { return _Size; }
 
     PermGeneric() = default;
-    PermGeneric(const vect v) : vect(v) {};
+    PermGeneric(const vect v) : vect(v){};
     PermGeneric(std::initializer_list<Expo> il);
 
     PermGeneric operator*(const PermGeneric &p) const {
@@ -41,7 +41,7 @@ struct PermGeneric : public VectGeneric<_Size, Expo> {
     static PermGeneric one() { return PermGeneric({}); }
     static PermGeneric elementary_transposition(uint64_t i);
 
-    PermGeneric inverse() const ;
+    PermGeneric inverse() const;
     static PermGeneric random();
 
     vect lehmer() const;
@@ -50,7 +50,6 @@ struct PermGeneric : public VectGeneric<_Size, Expo> {
     uint64_t nb_cycles() const;
 
     bool left_weak_leq(PermGeneric other) const;
-
 };
 
 /*****************************************************************************/

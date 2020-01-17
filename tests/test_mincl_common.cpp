@@ -17,7 +17,7 @@
 
 #include "hpcombi.hpp"
 
-#define PPCAT_NX(A, B) A ## B
+#define PPCAT_NX(A, B) A##B
 #define PPCAT(A, B) PPCAT_NX(A, B)
 
 int PPCAT(foo, CONST_TO_BE_CHANGED)() {

@@ -156,7 +156,6 @@ inline BMat8 BMat8::transpose() const {
     return BMat8(x);
 }
 
-
 inline BMat8 BMat8::transpose_mask() const {
     epu8 x = _mm_set_epi64x(_data, _data << 1);
     uint64_t res = _mm_movemask_epi8(x);
@@ -177,35 +176,34 @@ inline BMat8 BMat8::transpose_maskd() const {
     return BMat8(res);
 }
 
-
-using epu64 = uint64_t __attribute__ ((__vector_size__ (16), __may_alias__));
+using epu64 = uint64_t __attribute__((__vector_size__(16), __may_alias__));
 
 inline void BMat8::transpose2(BMat8 &a, BMat8 &b) {
     epu64 x = _mm_set_epi64x(a._data, b._data);
-    epu64 y = (x ^ (x >> 7)) & (epu64 {0xAA00AA00AA00AA, 0xAA00AA00AA00AA});
+    epu64 y = (x ^ (x >> 7)) & (epu64{0xAA00AA00AA00AA, 0xAA00AA00AA00AA});
     x = x ^ y ^ (y << 7);
-    y = (x ^ (x >> 14)) & (epu64 {0xCCCC0000CCCC, 0xCCCC0000CCCC});
+    y = (x ^ (x >> 14)) & (epu64{0xCCCC0000CCCC, 0xCCCC0000CCCC});
     x = x ^ y ^ (y << 14);
-    y = (x ^ (x >> 28)) & (epu64 {0xF0F0F0F0, 0xF0F0F0F0});
+    y = (x ^ (x >> 28)) & (epu64{0xF0F0F0F0, 0xF0F0F0F0});
     x = x ^ y ^ (y << 28);
     a._data = _mm_extract_epi64(x, 1);
     b._data = _mm_extract_epi64(x, 0);
 }
 
-static constexpr epu8 rotlow { 7, 0, 1, 2, 3, 4, 5, 6};
-static constexpr epu8 rothigh
-    { 0, 1, 2, 3, 4, 5, 6, 7,15, 8, 9,10,11,12,13,14};
-static constexpr epu8 rotboth
-    { 7, 0, 1, 2, 3, 4, 5, 6,15, 8, 9,10,11,12,13,14};
-static constexpr epu8 rot2
-    { 6, 7, 0, 1, 2, 3, 4, 5,14,15, 8, 9,10,11,12,13};
+static constexpr epu8 rotlow{7, 0, 1, 2, 3, 4, 5, 6};
+static constexpr epu8 rothigh{0,  1, 2, 3,  4,  5,  6,  7,
+                              15, 8, 9, 10, 11, 12, 13, 14};
+static constexpr epu8 rotboth{7,  0, 1, 2,  3,  4,  5,  6,
+                              15, 8, 9, 10, 11, 12, 13, 14};
+static constexpr epu8 rot2{6,  7,  0, 1, 2,  3,  4,  5,
+                           14, 15, 8, 9, 10, 11, 12, 13};
 
 inline BMat8 BMat8::mult_transpose(BMat8 const &that) const {
     epu8 x = _mm_set_epi64x(_data, _data);
     epu8 y = _mm_shuffle_epi8(_mm_set_epi64x(that._data, that._data), rothigh);
-    epu8 data {};
-    epu8 diag {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80,
-               0x80, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40};
+    epu8 data{};
+    epu8 diag{0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80,
+              0x80, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40};
     for (int i = 0; i < 4; ++i) {
         data |= ((x & y) != epu8{}) & diag;
         y = _mm_shuffle_epi8(y, rot2);
@@ -218,7 +216,7 @@ inline epu8 BMat8::row_space_basis_internal() const {
     epu8 res = remove_dups(revsorted8(_mm_set_epi64x(0, _data)));
     epu8 rescy = res;
     // We now compute the union of all the included different rows
-    epu8 orincl {};
+    epu8 orincl{};
     for (int i = 0; i < 7; i++) {
         rescy = permuted(rescy, rotlow);
         orincl |= ((rescy | res) == res) & rescy;
@@ -236,8 +234,8 @@ inline BMat8 BMat8::row_space_basis() const {
 #endif /* FF */
 #define FF 0xff
 
-constexpr std::array<epu8, 4> masks {{
-// clang-format off
+constexpr std::array<epu8, 4> masks{
+    {// clang-format off
         {FF, 0,FF, 0,FF, 0,FF, 0,FF, 0,FF, 0,FF, 0,FF, 0},
         {FF,FF, 1, 1,FF,FF, 1, 1,FF,FF, 1, 1,FF,FF, 1, 1},
         {FF,FF,FF,FF, 2, 2, 2, 2,FF,FF,FF,FF, 2, 2, 2, 2},
@@ -389,6 +387,10 @@ inline uint64_t BMat8::row_space_size_ref() const {
 }
 
 inline std::vector<uint8_t> BMat8::rows() const {
+  return row_vector();
+}
+
+inline std::vector<uint8_t> BMat8::row_vector() const {
     std::vector<uint8_t> rows;
     for (size_t i = 0; i < 8; ++i) {
         uint8_t row = static_cast<uint8_t>(_data << (8 * i) >> 56);
@@ -396,6 +398,15 @@ inline std::vector<uint8_t> BMat8::rows() const {
     }
     return rows;
 }
+
+inline std::array<uint8_t, 8> BMat8::row_array() const {
+  std::array<uint8_t, 8> rows;
+      rows.fill(0);
+      for (size_t i = 0; i < 8; ++i) {
+        rows[i] = static_cast<uint8_t>(_data << (8 * i) >> 56);
+      }
+      return rows;
+    }
 
 inline size_t BMat8::nr_rows() const {
     epu8 x = _mm_set_epi64x(_data, 0);

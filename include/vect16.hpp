@@ -35,7 +35,10 @@ struct alignas(16) Vect16 {
     HPCOMBI_CONSTEXPR_CONSTRUCTOR operator epu8() const { return v; }
 
     Vect16 &operator=(const Vect16 &) = default;
-    Vect16 &operator=(const epu8 &vv) { v = vv; return *this; }
+    Vect16 &operator=(const epu8 &vv) {
+        v = vv;
+        return *this;
+    }
 
     array &as_array() { return HPCombi::as_array(v); }
     const array &as_array() const { return HPCombi::as_array(v); }
@@ -79,9 +82,7 @@ struct alignas(16) Vect16 {
     char less_partial(const Vect16 &b, int k) const {
         return HPCombi::less_partial(v, b.v, k);
     };
-    Vect16 permuted(const Vect16 &b) const {
-        return HPCombi::permuted(v, b.v);
-    }
+    Vect16 permuted(const Vect16 &b) const { return HPCombi::permuted(v, b.v); }
     uint8_t sum() const { return HPCombi::horiz_sum(v); }
     Vect16 partial_sums() const { return HPCombi::partial_sums(v); };
     Vect16 eval16() const { return HPCombi::eval16(v); };
@@ -90,8 +91,6 @@ struct alignas(16) Vect16 {
     bool is_permutation(size_t k) const {
         return HPCombi::is_permutation(v, k);
     }
-
-
 };
 
 static_assert(std::is_trivial<Vect16>(), "Vect16 is not a trivial class !");
