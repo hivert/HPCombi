@@ -13,6 +13,8 @@
 #                  http://www.gnu.org/licenses/                              #
 #****************************************************************************#
 
+find_package(PkgConfig REQUIRED) 
+pkg_check_modules(BENCHMARK REQUIRED IMPORTED_TARGET benchmark)
 
 include_directories(
   ${CMAKE_SOURCE_DIR}/include
@@ -24,7 +26,7 @@ set(benchmark_src
 foreach(f ${benchmark_src})
   get_filename_component(benchName ${f} NAME_WE)
   add_executable (${benchName} ${f})
-  target_link_libraries(${benchName} benchmark pthread)
+  target_link_libraries(${benchName} PkgConfig::BENCHMARK pthread)
   # install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/${benchName}
   #   DESTINATION bin
   #   RENAME ${CMAKE_PROJECT_NAME}-${benchName})

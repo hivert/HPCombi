@@ -67,8 +67,14 @@ struct alignas(16) Vect16 {
     using iterator = typename array::iterator;
     using const_iterator = typename array::const_iterator;
 
+    const_iterator cbegin() const { return as_array().begin(); }
+    const_iterator cend() const { return as_array().end(); }
+
     iterator begin() { return as_array().begin(); }
     iterator end() { return as_array().end(); }
+
+    const_iterator begin() const { return as_array().begin(); }
+    const_iterator end() const { return as_array().end(); }
 
     bool operator==(const Vect16 &b) const { return HPCombi::equal(v, b.v); };
     bool operator!=(const Vect16 &b) const {
